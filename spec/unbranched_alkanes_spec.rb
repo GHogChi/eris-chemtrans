@@ -8,15 +8,11 @@ describe SmilesToIupacTranslator do
   end
 
   describe "irregular names" do
-
-    it "translates H-suppressed methane representation from SMILES to IUPAC" do
-      iupac = @translator.translate makeUnbranched 1
-      iupac.should eq "methane"
-    end
-
-    it "translates H-suppressed ethane representation from SMILES to IUPAC" do
-      iupac = @translator.translate makeUnbranched 2
-      iupac.should eq "ethane"
+    
+    it "translates the first four SMILES to the  corresponding irregular IUPAC names" do
+      smiles = smilize [1,2,3,4]
+      iupac = @translator.translate smiles
+      iupac.should eq ["methane","ethane","propane","butane"]
     end
 
   end
@@ -50,10 +46,26 @@ describe SmilesToIupacTranslator do
 
   end  
 
+  describe "unsupported stuff" do
+
+    describe "ignored text" do
+
+      it "ignores every char except C" do # Assume valid SMILES
+        iupac = @translator.translate "2837HOiquwyecC"
+	iupac.should eq "methane"
+      end
+    end
+
+  end
+
   def makeUnbranched carbonCount
     c = ""
     1.upto(carbonCount) {c << "C"}
     c
+  end
+
+  def smilize smiles #convert an array of integers to an array of SMILES unbranched H-suppressed alkanes
+    smiles.collect {|carbonCount| makeUnbranched carbonCount}
   end
 
 end
