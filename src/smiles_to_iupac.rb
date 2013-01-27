@@ -6,6 +6,16 @@ class SmilesToIupacTranslator
   ALKANE_SUFFIX = "ane"
     
   def translate smiles
+    iupac = []
+    if multiSmiles = Array.try_convert(smiles)
+      iupac = multiSmiles.collect {|oneSmiles| translateSingle oneSmiles}
+    elsif singleSmiles = String.try_convert(smiles)
+      iupac =  translateSingle singleSmiles 
+    end
+    iupac
+  end
+
+  def translateSingle smiles
     iupacPrefix = ""
     carbonCount = countCarbons smiles
     case
