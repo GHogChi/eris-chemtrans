@@ -15,6 +15,12 @@ describe SmilesToIupacTranslator do
       iupac.should eq ["methane","ethane","propane","butane"]
     end
 
+    it "translates undecane correctly" do
+      smiles = smilize [11,111]
+      iupac = @translator.translate smiles
+      iupac.should eq ["undecane","undecahectane"]
+    end
+
   end
 
   describe "regular names" do
@@ -24,24 +30,42 @@ describe SmilesToIupacTranslator do
       iupac.should eq "nonane"
     end
 
-    it "translates H-suppressed decane representation from SMILES to IUPAC" do
-      iupac = @translator.translate makeUnbranched 10
-      iupac.should eq "decane"
-    end
-
-    it "translates H-suppressed nonadecane representation from SMILES to IUPAC" do
-      iupac = @translator.translate makeUnbranched 19
-      iupac.should eq "nonadecane"
-    end
-
-    it "translates multiple SMILES names to IUPAC" do
-      smiles = Array.new(2)
-      smiles[0] = makeUnbranched 1
-      smiles[1] = makeUnbranched 2
+    it "translates numbers in the eighties - potentially problematic because 'octa' starts with a vowel" do
+      smiles = smilize [81,82,83,84]
       iupac = @translator.translate smiles
-      puts iupac.inspect
-      iupac[0].should eq "methane"
-      iupac[1].should eq "ethane"
+      iupac.should eq ["henoctacontane","dooctacontane","trioctacontane","tetraoctacontane"]
+    end
+    
+    it "translates multiples of 10 correctly" do
+      smiles = smilize 1.upto(9).collect {|n| n * 10}
+      iupac = @translator.translate smiles
+      iupac.should eq ["decane","icosane","triacontane","tetracontane","pentacontane",\
+      		"hexacontane","heptacontane","octacontane","nonacontane"]
+    end
+
+    it "translates 1-10 carbons correctly" do
+      smiles = smilize 1.upto(10)
+      iupac = @translator.translate smiles
+      iupac.should eq ["methane","ethane","propane","butane","pentane","hexane","heptane","octane","nonane","decane"]
+    end
+
+    it "translates 11-20 carbons correctly" do
+      smiles = smilize 11.upto(20)
+      iupac = @translator.translate smiles
+      iupac.should eq ["undecane","dodecane","tridecane","tetradecane","pentadecane","hexadecane","heptadecane","octadecane","nonadecane","icosane"]
+    end
+
+#NOTE: every IUPAC name above 30 is fully regular so an exhaustive test should not be necessary
+    it "translates 21-30 carbons correctly" do
+      smiles = smilize 21.upto(30)
+      iupac = @translator.translate smiles
+      iupac.should eq ["henicosane","docosane","tricosane","tetracosane","pentacosane","hexacosane","heptacosane","octacosane","nonacosane","triacontane"]
+    end
+
+    it "translates 101-104,199 carbons correctly" do
+      smiles = smilize [100,101,102,103,104,199]
+      iupac = @translator.translate smiles
+      iupac.should eq ["hectane","henihectane","dohectane","trihectane","tetrahectane","nonanonacontahectane"]
     end
 
   end  
