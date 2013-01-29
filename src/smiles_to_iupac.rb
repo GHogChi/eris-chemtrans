@@ -40,15 +40,18 @@ class SmilesToIupacTranslator
     iupac.gsub(/ii/,"i")
   end
 
-  def buildRegularBody numberToTranslate
-    onesValue = numberToTranslate % 10
-    onesMorpheme = ["","hen","do","tri","tetra","penta","hexa","hepta","octa","nona"][onesValue]
-    tensValue = (numberToTranslate / 10) % 10
-    tensMorpheme = ["","dec","icos","triacont","tetracont","pentacont","hexacont","heptacont","octacont","nonacont"][tensValue]
-    hundredsValue = (numberToTranslate /100) % 10
-    hundredsMorpheme = ["","hect","?200?","?300?","?400?","?500?","?600?","?700?","?80?","?900?"][hundredsValue]
-#puts "NTT: " + numberToTranslate.to_s + "TV: " + tensValue.to_s  + " TM: " + tensMorpheme
-    iupac = onesMorpheme + tensMorpheme + hundredsMorpheme
+# terms are based on http://www.chem.qmul.ac.uk/iupac/misc/numb.html
+  def buildRegularBody carbonCount
+    onesValue = carbonCount % 10
+    onesTerm = ["","hen","do","tri","tetra","penta","hexa","hepta","octa","nona"][onesValue]
+    tensValue = (carbonCount / 10) % 10
+    tensTerm = ["","deca","icosa","triaconta","tetraconta","pentaconta","hexaconta","heptaconta","octaconta","nonaconta"][tensValue]
+    hundredsValue = (carbonCount /100) % 10
+    hundredsTerm = ["","hect","dicta","tricta","tetracta","pentacta","hexacta","heptacta","octacta","nonacta"][hundredsValue]
+    thousandsValue = (carbonCount /1000) % 10
+    thousandsTerm = ["","kili","dili","trili","tetrali","pentali","hexali","heptali","octali","nonali"][thousandsValue]
+#puts "NTT: " + carbonCount.to_s + "TV: " + tensValue.to_s  + " TM: " + tensTerm
+    iupac = onesTerm + tensTerm + hundredsTerm + thousandsTerm
     iupac = iupac.gsub(/nh/,"nih")
     iupac.gsub(/th/,"tah")
   end

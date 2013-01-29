@@ -62,10 +62,28 @@ describe SmilesToIupacTranslator do
       iupac.should eq ["henicosane","docosane","tricosane","tetracosane","pentacosane","hexacosane","heptacosane","octacosane","nonacosane","triacontane"]
     end
 
+    it "translates 100-900 by 100s correctly" do
+      smiles = smilize 1.upto(9).collect {|n| n * 100}
+      iupac = @translator.translate smiles
+      iupac.should eq ["hectane","dictane","trictane","tetractane","pentactane","hexactane","heptactane","octactane","nonactane"]
+    end
+
+    it "translates 1000-9000 by 1000s correctly" do
+      smiles = smilize 1.upto(9).collect {|n| n * 1000}
+      iupac = @translator.translate smiles
+      iupac.should eq ["kiliane","diliane","triliane","tetraliane","pentaliane","hexaliane","heptaliane","octaliane","nonaliane"]
+    end
+
     it "translates 101-104,199 carbons correctly" do
       smiles = smilize [100,101,102,103,104,199]
       iupac = @translator.translate smiles
       iupac.should eq ["hectane","henihectane","dohectane","trihectane","tetrahectane","nonanonacontahectane"]
+    end
+
+    it "translates some big ones" do
+      smiles = smilize [1234,5678,9999,8765,4321]
+      iupac = @translator.translate smiles
+      iupac.should eq ["tetratriacontadictakiliane","octaheptacontahexactapentaliane","nonanonacontanonactanonaliane","pentahexacontaheptactaoctaliane","henicosatrictatetraliane"]
     end
 
   end  
@@ -93,3 +111,4 @@ describe SmilesToIupacTranslator do
   end
 
 end
+
