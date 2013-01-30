@@ -1,19 +1,25 @@
 # smiles_to_iupacPrefix.rb
 
+class ParsedSmiles
+
+  attr_reader :len, :is_branched
+
+  def initialize smiles
+    @len = 0
+    smiles.each_char { |c| 
+      @len += 1 if c == 'C'
+      @is_branched = true if c == '('    
+    }
+  end
+
+end
 
 class SmilesToIupacTranslator
     
-  ALKANE_SUFFIX = "ne"
-  IUPAC_SEPARATOR = "a"
+  ALKANE_SUFFIX = "ane"
+  ALKYL_SUFFIC = "yl"
   REGULAR_DIGIT_MORPHEMES = ["","un","do","tri","tetr","pent","hex","hept","oct","non"]
     
-
-  def countCarbons smiles
-    len = 0
-    smiles.each_char {|c| len += 1 if c == 'C'}
-    len
-  end   
-
   def translate smiles
     iupac = []
     if multiSmiles = Array.try_convert(smiles)
@@ -25,16 +31,21 @@ class SmilesToIupacTranslator
   end
 
   def translateSingle smiles
-    carbonCount = countCarbons smiles
-    iupacBody = buildIrregularBody carbonCount
-    if iupacBody == nil 
-      iupacBody = buildRegularBody carbonCount
+    parsed = ParsedSmiles.new smiles
+    if parsed.is_branched
+      iupacBody = "2-methyl-eth"
+    else
+      carbonCount = parsed.len
+      iupacBody = buildIrregularBody carbonCount
+      if iupacBody == nil 
+	iupacBody = buildRegularBody carbonCount
+      end
     end
     if iupacBody == nil
       iupacBody = "error!"
     end
       #todo convert to a single regexp if possible
-    iupac = iupacBody + IUPAC_SEPARATOR + ALKANE_SUFFIX
+    iupac = iupacBody + ALKANE_SUFFIX
     iupac = iupac.gsub(/a[ia]/,"a")
     iupac = iupac.gsub(/oi/,"o")
     iupac.gsub(/ii/,"i")
@@ -50,7 +61,6 @@ class SmilesToIupacTranslator
     hundredsTerm = ["","hect","dicta","tricta","tetracta","pentacta","hexacta","heptacta","octacta","nonacta"][hundredsValue]
     thousandsValue = (carbonCount /1000) % 10
     thousandsTerm = ["","kili","dili","trili","tetrali","pentali","hexali","heptali","octali","nonali"][thousandsValue]
-#puts "NTT: " + carbonCount.to_s + "TV: " + tensValue.to_s  + " TM: " + tensTerm
     iupac = onesTerm + tensTerm + hundredsTerm + thousandsTerm
     iupac = iupac.gsub(/nh/,"nih")
     iupac.gsub(/th/,"tah")

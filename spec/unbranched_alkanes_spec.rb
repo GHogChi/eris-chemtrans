@@ -1,5 +1,7 @@
 # unbranched_alkanes_spec.rb
 require_relative '../src/smiles_to_iupac.rb'
+require 'chem_trans_test_util.rb'
+include ChemTransTestUtil
 
 describe SmilesToIupacTranslator do
 
@@ -30,7 +32,7 @@ describe SmilesToIupacTranslator do
       iupac.should eq "nonane"
     end
 
-    it "translates numbers in the eighties - potentially problematic because 'octa' starts with a vowel" do
+    it "translates numbers in the eighties - potentially problematic because octa starts with a vowel" do
       smiles = smilize [81,82,83,84]
       iupac = @translator.translate smiles
       iupac.should eq ["henoctacontane","dooctacontane","trioctacontane","tetraoctacontane"]
@@ -98,16 +100,6 @@ describe SmilesToIupacTranslator do
       end
     end
 
-  end
-
-  def makeUnbranched carbonCount
-    c = ""
-    1.upto(carbonCount) {c << "C"}
-    c
-  end
-
-  def smilize smiles #convert an array of integers to an array of SMILES unbranched H-suppressed alkanes
-    smiles.collect {|carbonCount| makeUnbranched carbonCount}
   end
 
 end
