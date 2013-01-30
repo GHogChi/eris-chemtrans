@@ -14,7 +14,13 @@ describe "branched alkanes" do
   it "translates a simple branched alkane" do
     smiles = "C(C)C"
     iupac = @translator.translate smiles
-    iupac.should eq "2-methyl-ethane"
+    iupac.should eq "2-methyl-propane"
+  end
+
+  it "translates another simple branched alkane" do
+    smiles = "C(C)CC"
+    iupac = @translator.translate smiles
+    iupac.should eq "2-methyl-butane"
   end
 
 end

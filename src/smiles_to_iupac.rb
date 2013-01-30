@@ -2,12 +2,12 @@
 
 class ParsedSmiles
 
-  attr_reader :len, :is_branched
+  attr_reader :parent_chain_len, :is_branched
 
   def initialize smiles
-    @len = 0
+    @parent_chain_len = 0
     smiles.each_char { |c| 
-      @len += 1 if c == 'C'
+      @parent_chain_len += 1 if c == 'C'
       @is_branched = true if c == '('    
     }
   end
@@ -32,14 +32,10 @@ class SmilesToIupacTranslator
 
   def translateSingle smiles
     parsed = ParsedSmiles.new smiles
+    iupacBody = translateParentChain parsed.parent_chain_len
     if parsed.is_branched
-      iupacBody = "2-methyl-eth"
+      iupacBody = "2-methyl-" + iupacBody
     else
-      carbonCount = parsed.len
-      iupacBody = buildIrregularBody carbonCount
-      if iupacBody == nil 
-	iupacBody = buildRegularBody carbonCount
-      end
     end
     if iupacBody == nil
       iupacBody = "error!"
@@ -49,6 +45,14 @@ class SmilesToIupacTranslator
     iupac = iupac.gsub(/a[ia]/,"a")
     iupac = iupac.gsub(/oi/,"o")
     iupac.gsub(/ii/,"i")
+  end
+
+  def translateParentChain length
+      parentChainName = buildIrregularBody length
+      if parentChainName == nil 
+	parentChainName = buildRegularBody length
+      end
+      parentChainName
   end
 
 # terms are based on http://www.chem.qmul.ac.uk/iupac/misc/numb.html
